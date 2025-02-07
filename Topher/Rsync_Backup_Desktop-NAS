@@ -1,0 +1,6 @@
+#!/bin/bash
+cd
+pacman -Qe > ~/Desktop/Documents/installedProgs.txt
+xautolock -disable
+rsync -azv  .asoundrc .bash_profile .bashrc .config .ssh .urxvt .vim .xinitrc .Xresources Desktop/Documents/installedProgs.txt /usr/local/bin topher@192.168.88.31:/volume1/Storage/FileBackup/
+xautolock -enable
