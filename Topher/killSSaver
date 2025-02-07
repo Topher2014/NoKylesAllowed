@@ -1,0 +1,24 @@
+#!/bin/bash
+
+while :
+do
+
+x="$(xset -q | grep -Eo '(Standby):[[:blank:]]+[^[:blank:]]+')" 
+y="$(pgrep xautolock)"
+z="$(pgrep zoom)"
+
+if [ "$z" ] &&  [ "$x" != "Standby: 0" ]; then 
+    xset dpms 0 0 0
+elif [ "$z" = "" ] && [ "$x" == "Standby: 0" ]; then 
+    xset dpms 600 0 0
+fi
+
+if [ "$z" ] && [ "$y" ]; then
+    xautolock -exit
+elif [ "$z" = "" ] && [ "$y" = "" ]; then
+    xautolock -time 45 -detectsleep -corners 000- -cornersize 400 -locker "sudo systemctl suspend" &
+fi
+
+sleep 60
+
+done

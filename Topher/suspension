@@ -1,0 +1,2 @@
+#!/bin/bash
+xautolock -time 45 -detectsleep -corners 000- -cornersize 400 -locker "sudo systemctl suspend" &

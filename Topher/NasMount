@@ -1,0 +1,1 @@
+sudo mount -t cifs  -o user=topher,uid=topher,gid=topher,vers=2.0 //192.168.88.31/Media /mnt/NAS/
