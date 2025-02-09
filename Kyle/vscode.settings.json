@@ -1,0 +1,27 @@
+{
+    "C_Cpp.formatting": "clangFormat",
+    "files.autoSave": "onFocusChange",
+    "workbench.startupEditor": "none",
+    "haskell.manageHLS": "GHCup",
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true,
+    "terminal.integrated.enableMultiLinePasteWarning": false,
+    "editor.lineNumbers": "relative",
+    "workbench.sideBar.location": "right",
+    "workbench.iconTheme": "vscode-icons",
+    "[markdown]": {
+        "editor.defaultFormatter": "yzhang.markdown-all-in-one"
+    },
+    "explorer.confirmDragAndDrop": false,
+    "workbench.editor.enablePreview": false,
+    "editor.rulers": [
+        // 80,
+        120,
+    ],
+    "security.workspace.trust.untrustedFiles": "open",
+    "editor.minimap.enabled": false,
+    "cmake.pinnedCommands": [
+        "workbench.action.tasks.configureTaskRunner",
+        "workbench.action.tasks.runTask"
+    ]
+}
