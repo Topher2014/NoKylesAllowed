@@ -62,6 +62,35 @@ cd yay
 makepkg -si
 ```
 
+## ssh
+```
+sudo pacman -S openssh git
+ssh-keygen -t ed25519 -C "your_email@example.com"
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
+cat ~/.ssh/id_ed25519.pub // public key for git
+git config --global user.name "Your Name"
+git config --global user.email "your_email@example.com"
+```
+
+## VS Code
+```
+sudo pacman -S code
+```
+Copy `vscode.settings.json` to `~/Code/User/settings.json` (or similar)
+```
+sudo pacman -S cmake
+```
+Extensions
+  - CMake
+  - CMake IntelliSence
+  - vscode-icons
+  - vscode-pdf
+  - rainbow csv
+  - C/C++ Extension Pack (MS)
+      - Download VSIX from [github](https://github.com/microsoft/vscode-cpptools)
+      - Install from VSIX in VS Code
+
 ## Steam
 First, enable multilib repo for 32-bit libraries. Uncomment the following lines from `/etc/pacman.conf`:
 ```
@@ -79,4 +108,5 @@ sudo pacman -S lib32-nvidia-utils
 ```
 yay -S brave-bin
 sudo pacman -S tmux
+sudo pacman -S xclip
 ```
