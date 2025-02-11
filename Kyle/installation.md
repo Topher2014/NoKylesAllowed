@@ -32,7 +32,7 @@ exit
 ```
 pacman -S i3 // window manager
 pacman -S xorg-server xorg-xinit xorg-apps // graphics interface
-pacman -S nvidia nvidia-utils // nvidia drivers
+pacman -S nvidia nvidia-utils nvidia-settings // nvidia drivers
 pacman -S alacritty // terminal emulator
 ```
 
