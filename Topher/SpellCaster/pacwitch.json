@@ -1,0 +1,129 @@
+{
+  "name": "pacwitch",
+  "description": "A spell to switch context from local to a fresh Arch compute instance",
+  "identity": "topherludlow@protonmail.com",
+  "$schema": "https://spellcaster.sh/schema.json",
+  "license": "accept",
+  "trigraphs": [
+    {
+      "#": "create ${VM}.qcow2 ${VM_STORAGE:-50G} vm image",
+      "?": "test -f /var/lib/libvirt/images/${VM}.qcow2",
+      "!": "sudo qemu-img create -F qcow2 -b /var/lib/libvirt/images/$(basename ${IMG}) -f qcow2 /var/lib/libvirt/images/${VM}.qcow2 ${VM_STORAGE:-50G}"
+    },
+    {
+      "#": "libvirt-daemon-system should be installed",
+      "?": "dpkg -s libvirt-daemon-system",
+      "!": "sudo apt install -y libvirt-daemon-system"
+    },
+    {
+      "#": "libvirt-daemon-system should be in the apt-cache",
+      "?": "apt-cache show libvirt-daemon-system",
+      "!": "sudo apt update"
+    },
+    {
+      "#": "qemu-system should be installed",
+      "?": "dpkg -s qemu-system",
+      "!": "sudo apt install -y qemu-system"
+    },
+    {
+      "#": "qemu-system should be in the apt-cache",
+      "?": "apt-cache show qemu-system",
+      "!": "sudo apt update"
+    },
+    {
+      "#": "virtinst should be installed",
+      "?": "dpkg -s virtinst",
+      "!": "sudo apt install -y virtinst"
+    },
+    {
+      "#": "virtinst should be in the apt-cache",
+      "?": "apt-cache show virtinst",
+      "!": "sudo apt update"
+    },
+    {
+      "#": "cloud-image-utils should be installed",
+      "?": "dpkg -s cloud-image-utils",
+      "!": "sudo apt install -y cloud-image-utils"
+    },
+    {
+      "#": "cloud-image-utils should be in the apt-cache",
+      "?": "apt-cache show cloud-image-utils",
+      "!": "sudo apt update"
+    },
+    {
+      "#": "libosinfo-bin should be installed for osinfo-query",
+      "?": "dpkg -s libosinfo-bin",
+      "!": "sudo apt install -y libosinfo-bin"
+    },
+    {
+      "#": "libosinfo-bin should be in the apt-cache",
+      "?": "apt-cache show libosinfo-bin",
+      "!": "sudo apt update"
+    },
+    {
+      "#": "libvirtd service should be active",
+      "?": "systemctl is-active libvirtd",
+      "!": "sudo systemctl restart libvirtd"
+    },
+    {
+      "#": "$USER should be in the group libvirt",
+      "?": "id -nG $USER | grep libvirt",
+      "!": "sudo usermod -aG libvirt $USER"
+    },
+    {
+      "#": "$USER should be in the group kvm",
+      "?": "id -nG $USER | grep kvm",
+      "!": "sudo usermod -aG kvm $USER"
+    },
+    {
+      "#": "$HOME/.config/libvirt should exist",
+      "?": "test -d $HOME/.config/libvirt",
+      "!": "mkdir $HOME/.config/libvirt"
+    },
+    {
+      "#": ".config/libvirt/libvirt.conf should exist",
+      "?": "grep 'uri_default = \"qemu:///system\"' $HOME/.config/libvirt/libvirt.conf",
+      "!": "echo 'uri_default = \"qemu:///system\"' > $HOME/.config/libvirt/libvirt.conf"
+    },
+    {
+      "#": "$USER should be in the /var/run/libvirt/libvirt-sock user ACL",
+      "?": "getfacl /var/run/libvirt/libvirt-sock | grep $USER",
+      "!": "sudo setfacl -m user:$USER:rw /var/run/libvirt/libvirt-sock"
+    },
+    {
+      "#": "${VM}-cloud-init should exist",
+      "?": "grep \"$(cat id_ed25519.pub)\" ${VM}-cloud-init && grep \"${VM}\" ${VM}-cloud-init",
+      "!": "pubkey=$(cat id_ed25519.pub) && echo -e \"#cloud-config\\nhostname: ${VM}\\nusers:\\n  - default\\n  - name: ${VM_USER:-${USER}}\\n    sudo: ALL=(ALL) NOPASSWD:ALL\\n    lock_passwd: true\\n    ssh-authorized-keys:\\n      - ${pubkey}\\n    shell: /bin/bash\" > ${VM}-cloud-init"
+    },
+    {
+      "#": "Backing image ${IMG} should be downloaded",
+      "?": "stat ./$(basename ${IMG}) /var/lib/libvirt/images/$(basename ${IMG})",
+      "!": "sudo wget -nc --show-progress --progress=bar:force:noscroll ${IMG} -O ./$(basename ${IMG}) && sudo mkdir -p /var/lib/libvirt/images && sudo cp ./$(basename ${IMG}) /var/lib/libvirt/images/$(basename ${IMG}) >&3"
+    },
+    {
+      "#": "ssh keypair should exist",
+      "?": "test -f id_ed25519.pub",
+      "!": "ssh-keygen -t ed25519 -q -C \"${VM_USER:-${USER}}@spellcaster.sh\" -N \"\" -f \"./id_ed25519\" <<< n"
+    },
+    {
+      "#": "the VM ${VM} should be created and running",
+      "?": "virsh list --state-running | grep ${VM}",
+      "!": "sudo virt-install --name ${VM} --memory ${VM_MEM:-4096} --vcpus ${VM_CPU:-4} --os-variant ${OS} --disk path=/var/lib/libvirt/images/${VM}.qcow2,device=disk --import --noautoconsole --autostart --cloud-init user-data=./${VM}-cloud-init"
+    },
+    {
+      "#": "${VM} should be available over ssh",
+      "?": "ssh -n -i ./id_ed25519 -o StrictHostKeyChecking=no ${VM_USER:-${USER}}@$(virsh domifaddr ${VM} | awk -F'[ /]+' '{if (NR>2) print $5}') exit",
+      "!": "sleep 2"
+    },
+    {
+      "#": "acl should be installed for setfacl",
+      "?": "dpkg -s acl",
+      "!": "sudo apt install -y acl"
+    },
+    {
+      "#": "acl should be in the apt-cache",
+      "?": "apt-cache show acl",
+      "!": "sudo apt update"
+    }
+  ]
+}
