@@ -1,0 +1,10 @@
+#cloud-config
+
+users:
+  - name: arch
+    passwd: $6$0usCS/niR3s5gOGB$52xvSL7Gc9ISILQsUzDVQHJVJlI6ykrYFEybriQEF0UD8lu66j3UAVE/bMtokSZy4hXWnMlN0Lx/jHMUKOwZg1
+#    plain_text_password: arch
+    lock_passwd: false
+    groups: wheel
+    sudo: ALL=(ALL) ALL
+    shell: /bin/bash
