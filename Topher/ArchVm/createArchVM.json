@@ -1,0 +1,70 @@
+{
+    "name": "createArchVM",
+    "description": "A spell to switch context from local to a fresh Arch compute instance",
+    "identity": "topherludlow@protonmail.com",
+    "$schema": "https://spellcaster.sh/schema.json",
+    "license": "accept",
+    "trigraphs": [
+      {
+        "#": "The VM ${VM:-arch-vm} should exist",
+        "?": "virsh list --state-running | grep ${VM:-arch-vm}",
+        "!": "sudo virt-install --name ${VM:-arch-vm} --os-variant archlinux --disk path=/var/lib/libvirt/images/${VM:-arch-vm}.qcow2 --cloud-init user-data=./arch-vm_cloud-init --import --noautoconsole"
+      },
+      {
+        "#": "/var/lib/libvirt/images/${VM:-arch-vm}.qcow2 should exist",
+        "?": "test -s /var/lib/libvirt/images/${VM:-arch-vm}.qcow2",
+        "!": "sudo qemu-img create -F qcow2 -b /var/lib/libvirt/images/Arch-Linux-x86_64-cloudimg.qcow2 -f qcow2 /var/lib/libvirt/images/${VM:-arch-vm}.qcow2 ${VM_STORAGE:-50G}"
+      },
+      {
+        "#": "Backing image /var/lib/libvirt/images/Arch-Linux-x86_64-cloudimg.qcow2 should exist",
+        "?": "test -s /var/lib/libvirt/images/Arch-Linux-x86_64-cloudimg.qcow2",
+        "!": "sudo wget https://geo.mirror.pkgbuild.com/images/latest/Arch-Linux-x86_64-cloudimg.qcow2 -O /var/lib/libvirt/images/Arch-Linux-x86_64-cloudimg.qcow2"
+      },
+      {
+        "#": "qemu-base should be installed",
+        "?": "pacman -Q qemu-base",
+        "!": "sudo pacman -S qemu-base"
+      },
+      {
+        "#": "Virsh default network should be active",
+        "?": "virsh net-info default | grep \"Active:.*yes\"",
+        "!": "virsh net-start default"
+      },
+      {
+        "#": "Virsh default network autostart should be enabled",
+        "?": "virsh net-info default | grep \"Autostart:.*yes\"",
+        "!": "virsh net-autostart default"
+      },
+      {
+        "#": "libvirt should be installed",
+        "?": "pacman -Q libvirt",
+        "!": "sudo pacman -S libvirt"
+      },
+
+      {
+        "#": "virt-manager should be installed",
+        "?": "pacman -Q virt-manager",
+        "!": "sudo pacman -S virt-manager"
+      },
+      {
+        "#": "libvirtd should be enabled",
+        "?": "systemctl is-enabled libvirtd",
+        "!": "sudo systemctl enable libvirtd"
+      },
+      {
+        "#": "libvirtd should be running",
+        "?": "systemctl is-active libvirtd",
+        "!": "sudo systemctl start libvirtd"
+      },
+      {
+        "#": "$USER should belong to libvirt group",
+        "?": "groups $USER | grep libvirt",
+        "!": "sudo usermod -aG libvirt $USER"
+      },
+      {
+        "#": "There should be no Arch system updates available",
+        "?": "test -z \"$(checkupdates)\"",
+        "!": "sudo pacman -Syu"
+      }
+    ]
+  }
