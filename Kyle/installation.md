@@ -110,3 +110,38 @@ yay -S brave-bin
 sudo pacman -S tmux
 sudo pacman -S xclip
 ```
+
+## i3 Screen Tearing (NVIDIA, multi-montior with different resolutions)
+i3 does not handle display composition by iteself. "Composition" refers to how frames from different windows are combined and drawn to your screen. Without proper composition, you can get screen tearing.
+
+1. Install a compositor
+```
+sudo pacman -S picom
+```
+
+2. Set the compositor config at `~/.config/picom.conf`:
+```
+backend = "glx";  // use OpenGL for rendering
+vsync = true;
+glx-no-stencil = true;
+glx-copy-from-front = false;
+
+# For NVIDIA cards specifically
+xrender-sync-fence = true;
+```
+
+3. Specify i3 to use the compositor (``/.config/i3/config`):
+```
+exec --no-startup-id picom -b
+```
+
+4. (optional) NVIDIA-specifc optimization in `/etc/X11/xorg.conf.d/20-nvidia.conf`
+```
+Section "Device"
+    Identifier     "Device0"
+    Driver         "nvidia"
+    Option         "ForceFullCompositionPipeline" "on"
+    Option         "AllowIndirectGLXProtocol" "off"
+EndSection
+```
+
