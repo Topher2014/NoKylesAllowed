@@ -5,19 +5,20 @@
 # find INTERFACE with `ip link`
 `ip link set INTERFACE up`
 
-sudo systemctl enable systemd-networkd
-sudo systemctl start systemd-networkd
+# Start and enable systemd-resolved for DNS resolution
+systemctl enable systemd-resolved
+systemctl start systemd-resolved
 
-sudo systemctl enable systemd-resolved
-sudo systemctl start systemd-resolved
+# Start systemd-networkd for temporary connectivity
+systemctl start systemd-networkd
 
+# Install and start/enable NetworkManager
 pacman -S networkmanager
+systemctl enable NetworkManager
+systemctl start NetworkManager
 
-sudo systemctl disable systemd-networkd
+# Stop systemd-networkd (no longer needed)
 sudo systemctl stop systemd-networkd
-
-sudo systemctl enable systemd-resolved
-sudo systemctl start systemd-resolved
 ```
 
 ## New User
